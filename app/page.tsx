@@ -12,6 +12,8 @@ const dasavataraVideoUrl = "https://www.youtube.com/embed/Z3h71JsZjT0";
 const Index = () => {
   const [activeContent, setActiveContent] = useState<"gita" | "vishnu" | "dasavatara">("gita");
   const [names, setNames] = useState<string[]>([]);
+  const [isReaderOpen, setIsReaderOpen] = useState(true);
+  const toggleReader = () => setIsReaderOpen((o) => !o);
   const [currentPersonIndex, setCurrentPersonIndex] = useState(0);
   const parasPerPerson = 4;
   const parasPerPage = 4;
@@ -50,6 +52,7 @@ const Index = () => {
       }
     }
   };
+  
 
   useEffect(() => {
     // Reset page index when switching content
@@ -100,6 +103,8 @@ const Index = () => {
           currentPersonIndex={currentPersonIndex}
           currentParas={currentParas}
           parasPerPerson={parasPerPerson}
+          isReaderOpen={isReaderOpen}
+          toggleReader={toggleReader}
         />
       </div>
     </SidebarProvider>

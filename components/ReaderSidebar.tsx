@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Users, User, PlusCircle } from 'lucide-react';
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ReaderSidebarProps {
   names: string[];
@@ -10,6 +11,8 @@ interface ReaderSidebarProps {
   currentPersonIndex: number;
   currentParas: { id: number; text: string }[];
   parasPerPerson: number;
+  isReaderOpen?: boolean;
+  toggleReader?: () => void;
 }
 
 const ReaderSidebar = ({
@@ -18,8 +21,12 @@ const ReaderSidebar = ({
   currentPersonIndex,
   currentParas,
   parasPerPerson,
+  isReaderOpen = true,
+  toggleReader,
 }: ReaderSidebarProps) => {
   const [newName, setNewName] = useState("");
+  const isMobile = useIsMobile();
+
 
   const handleAddName = () => {
     if (newName.trim() && names.length < 21) {
@@ -28,15 +35,44 @@ const ReaderSidebar = ({
     }
   };
 
+  // Mobile view classes
+  const mobileClasses = isReaderOpen 
+    ? "fixed inset-y-0 right-0 w-[85%] max-w-[300px] z-40 shadow-xl transform translate-x-0 transition-transform duration-300 ease-in-out"
+    : "fixed inset-y-0 right-0 w-[85%] max-w-[300px] z-40 shadow-xl transform translate-x-full transition-transform duration-300 ease-in-out";
+
+  // Desktop view classes
+  const desktopClasses = "border-l border-orange-200 w-[280px] min-w-[280px]";
+
   return (
-    <div className="hidden border-l border-orange-200 md:block bg-gradient-to-b from-amber-50 to-orange-50">
-      <div className="flex h-full flex-col">
-        <div className="border-b border-orange-200 p-4 bg-gradient-to-r from-orange-600 to-red-600">
-          <h2 className="font-bold text-yellow-100 flex items-center gap-2">
-            <Users className="h-5 w-5" />
-            पाठक सूची
-          </h2>
-          <p className="text-sm text-yellow-100/80">आप अधिकतम 21 पाठक जोड़ सकते हैं</p>
+    <>
+      {/* Mobile backdrop */}
+      {isMobile && isReaderOpen && (
+        <div 
+          className="fixed inset-0 bg-black/30 z-30 md:hidden"
+          onClick={() => toggleReader?.()}
+        ></div>
+      )}
+      
+      {/* Main Sidebar */}
+      <div className={`${isMobile ? mobileClasses : desktopClasses} bg-gradient-to-b from-amber-50 to-orange-50 flex flex-col`}>
+        <div className="border-b border-orange-200 p-4 bg-gradient-to-r from-orange-600 to-red-600 flex justify-between items-center">
+          <div>
+            <h2 className="font-bold text-yellow-100 flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              पाठक सूची
+            </h2>
+            <p className="text-sm text-yellow-100/80">आप अधिकतम 21 पाठक जोड़ सकते हैं</p>
+          </div>
+          {isMobile && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={toggleReader} 
+              className="text-yellow-100 hover:bg-orange-500 hover:text-yellow-50"
+            >
+              &times;
+            </Button>
+          )}
         </div>
         
         {/* Decorative element - top */}
@@ -54,9 +90,9 @@ const ReaderSidebar = ({
             <Button
               onClick={handleAddName}
               disabled={!newName.trim() || names.length >= 21}
-              className="bg-orange-600 hover:bg-orange-700 text-white"
+              className="bg-orange-600 hover:bg-orange-700 text-white min-w-[80px]"
             >
-              <PlusCircle className="h-4 w-4 mr-1" />
+              <PlusCircle className="h-4 w-4 mr-1 md:inline hidden" />
               जोड़ें
             </Button>
           </div>
@@ -121,7 +157,17 @@ const ReaderSidebar = ({
           <div className="text-orange-700 text-sm">॥ शुभं भवतु ॥</div>
         </div>
       </div>
-    </div>
+      
+      {/* Mobile toggle button */}
+      {isMobile && !isReaderOpen && (
+        <button 
+          onClick={() => toggleReader?.()}
+          className="fixed bottom-5 right-5 z-30 rounded-full bg-orange-600 text-white p-3 shadow-lg hover:bg-orange-700"
+        >
+          <Users className="h-6 w-6" />
+        </button>
+      )}
+    </>
   );
 };
 
