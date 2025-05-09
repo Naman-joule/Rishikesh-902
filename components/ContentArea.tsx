@@ -126,21 +126,18 @@ const ContentArea = ({
                   ></iframe>
                 </div>
               )}
-              {currentParas
-                .slice(
-                  currentPage * parasPerPage,
-                  currentPage * parasPerPage + parasPerPage
-                )
-                .map((para, idx) => (
+              {isMobile ? (
+                // Show all content for mobile
+                currentParas.map((para, idx) => (
                   <Card
                     key={para.id}
                     className="border-2 border-orange-300 bg-gradient-to-r from-yellow-50 to-orange-50 shadow-md hover:shadow-lg transition-shadow overflow-hidden"
                   >
                     <div className="h-1 bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500"></div>
                     <CardContent className="p-3 sm:p-6">
-                      {indices?.[currentPage * parasPerPage + idx] && (
+                      {indices?.[idx] && (
                         <div className="mb-1 sm:mb-2 text-orange-800 font-semibold text-sm sm:text-base">
-                          श्लोक {indices[currentPage * parasPerPage + idx]}
+                          श्लोक {indices[idx]}
                         </div>
                       )}
                       <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl leading-relaxed sm:leading-loose font-normal text-orange-900">
@@ -151,36 +148,67 @@ const ContentArea = ({
                       </div>
                     </CardContent>
                   </Card>
-                ))}
+                ))
+              ) : (
+                // Show paginated content for desktop
+                currentParas
+                  .slice(
+                    currentPage * parasPerPage,
+                    currentPage * parasPerPage + parasPerPage
+                  )
+                  .map((para, idx) => (
+                    <Card
+                      key={para.id}
+                      className="border-2 border-orange-300 bg-gradient-to-r from-yellow-50 to-orange-50 shadow-md hover:shadow-lg transition-shadow overflow-hidden"
+                    >
+                      <div className="h-1 bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500"></div>
+                      <CardContent className="p-3 sm:p-6">
+                        {indices?.[currentPage * parasPerPage + idx] && (
+                          <div className="mb-1 sm:mb-2 text-orange-800 font-semibold text-sm sm:text-base">
+                            श्लोक {indices[currentPage * parasPerPage + idx]}
+                          </div>
+                        )}
+                        <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl leading-relaxed sm:leading-loose font-normal text-orange-900">
+                          {para.text}
+                        </p>
+                        <div className="mt-2 sm:mt-3 text-right text-xs sm:text-sm text-orange-700">
+                          पैराग्राफ {para.id}/{currentParas.length}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))
+              )}
             </div>
           </div>
 
-          {/* Responsive navigation controls */}
-          <div className="mt-6 sm:mt-10 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0 px-2 sm:px-0">
-            <Button
-              onClick={handlePrevWithScroll}
-              disabled={currentPage === 0}
-              variant="outline"
-              className="border-2 border-orange-400 text-orange-700 hover:bg-orange-100 hover:text-orange-800 font-medium px-4 sm:px-6 py-1 sm:py-2 h-auto rounded-full group w-full sm:w-auto"
-            >
-              <ChevronLeft className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 group-hover:-translate-x-1 transition-transform" />
-              पिछला पृष्ठ
-            </Button>
+          {/* Navigation controls - only show on desktop */}
+          {!isMobile && (
+            <div className="mt-6 sm:mt-10 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0 px-2 sm:px-0">
+              <Button
+                onClick={handlePrevWithScroll}
+                disabled={currentPage === 0}
+                variant="outline"
+                className="border-2 border-orange-400 text-orange-700 hover:bg-orange-100 hover:text-orange-800 font-medium px-4 sm:px-6 py-1 sm:py-2 h-auto rounded-full group w-full sm:w-auto"
+              >
+                <ChevronLeft className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 group-hover:-translate-x-1 transition-transform" />
+                पिछला पृष्ठ
+              </Button>
 
-            <div className="text-center order-first sm:order-none mb-2 sm:mb-0">
-              {/* ... keep existing code (page information) */}
+              <div className="text-center order-first sm:order-none mb-2 sm:mb-0">
+                {/* ... keep existing code (page information) */}
+              </div>
+
+              <Button
+                onClick={handleNextWithScroll}
+                disabled={currentPage >= totalPages - 1}
+                variant="outline"
+                className="border-2 border-orange-400 text-orange-700 hover:bg-orange-100 hover:text-orange-800 font-medium px-4 sm:px-6 py-1 sm:py-2 h-auto rounded-full group w-full sm:w-auto"
+              >
+                अगला पृष्ठ
+                <ChevronRight className="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4 group-hover:translate-x-1 transition-transform" />
+              </Button>
             </div>
-
-            <Button
-              onClick={handleNextWithScroll}
-              disabled={currentPage >= totalPages - 1}
-              variant="outline"
-              className="border-2 border-orange-400 text-orange-700 hover:bg-orange-100 hover:text-orange-800 font-medium px-4 sm:px-6 py-1 sm:py-2 h-auto rounded-full group w-full sm:w-auto"
-            >
-              अगला पृष्ठ
-              <ChevronRight className="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </div>
+          )}
         </div>
       </main>
 
